@@ -1,0 +1,60 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use ieee.numeric_std.all;
+
+entity var_bit_rotation is
+    PORT (
+        d: in std_logic_vector(3 downto 0);
+        k: in std_logic_vector(1 downto 0);
+        ld: in std_logic;
+        lk: in std_logic;
+        clk: in std_logic;
+        busy: out std_logic := '0';
+        done: out std_logic := '0';
+        v: out std_logic_vector(3 downto 0)
+    );
+end var_bit_rotation;
+
+architecture rtl of var_bit_rotation is
+    signal limit: unsigned(1 downto 0);
+    signal cnt: unsigned(1 downto 0) := "00";
+    signal buf: std_logic;
+    signal busy_cp:std_logic :='0';
+    signal tmp: std_logic_vector(3 downto 0);
+begin
+    process (ld)
+    begin
+        if ( ld ='1') then
+            tmp <= d;
+        end if;
+    end process;
+    
+    process(lk,clk)
+    begin
+        if ( lk = '1' ) then
+            limit <= unsigned(k);
+            busy <= '1';
+            busy_cp <= '1';
+        end if;
+        if (rising_edge(clk)) then
+            if ( busy_cp <= '1') then
+                if ( cnt /= limit) then
+                    buf <= tmp(3);
+                    tmp(3) <= tmp(2);
+                    tmp(2) <= tmp(1);
+                    tmp(1) <= tmp(0);
+                    tmp(0) <= buf;
+                    cnt <= cnt + 1;
+                end if;
+                if ( cnt = limit) then
+                    cnt <= "00";
+                    v <= tmp;
+                    busy <= '0';
+                    busy_cp <= '0';
+                    done <= '1';
+                end if;
+            end if;
+        end if;
+
+    end process;
+end rtl;
