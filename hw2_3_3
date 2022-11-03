@@ -1,0 +1,54 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use ieee.numeric_std.all;
+
+entity rotater is
+    PORT (
+        d: in std_logic_vector(3 downto 0);
+        k: in std_logic_vector(1 downto 0);
+        ld: in std_logic;
+        lk: in std_logic;
+        clk: in std_logic;
+        busy: out std_logic := '0';
+        done: out std_logic := '0';
+        v: out std_logic_vector(3 downto 0)
+    );
+end rotater;
+
+architecture rtl of rotater is
+    signal limit: unsigned(1 downto 0);
+    signal cnt: unsigned(1 downto 0) := "00";
+    signal busy_cp:std_logic :='0';
+    signal tmp: std_logic_vector(3 downto 0);
+begin
+    process(lk,clk,ld)
+    begin
+        if ( ld ='1') then
+            tmp <= d;
+            v <= d;
+        end if;
+        if ( lk = '1' ) then
+            limit <= unsigned(k);
+            busy <= '1';
+            busy_cp <= '1';
+        end if;
+        if (rising_edge(clk)) then
+            if ( busy_cp = '1') then
+                if ( cnt < limit) then
+                    tmp <= tmp(2 downto 0) & tmp(3);
+                    v <= tmp;
+                    if (cnt + 1=limit) then
+                        done <= '1';
+                    end if;
+                    cnt <= cnt + 1;
+                end if;
+                if ( cnt = limit) then
+                    done <= '0';
+                    busy <= '0';
+                    busy_cp <= '0';
+                end if;
+            end if;
+        end if;
+
+    end process;
+end rtl;
