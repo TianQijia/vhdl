@@ -36,7 +36,7 @@ begin
             if ( busy_cp = '1') then
                 if ( cnt < limit) then
                     tmp <= tmp(2 downto 0) & tmp(3);
-                    v <= tmp;
+                    v <= tmp(2 downto 0) & tmp(3);
                     if (cnt + 1=limit) then
                         done <= '1';
                     end if;
