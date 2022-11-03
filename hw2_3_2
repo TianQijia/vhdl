@@ -34,7 +34,7 @@ begin
             busy_cp <= '1';
         end if;
         if (rising_edge(clk)) then
-            if ( busy_cp <= '1') then
+            if ( busy_cp = '1') then
                 if ( cnt /= limit) then
                     buf <= tmp(3);
                     tmp(3) <= tmp(2);
