@@ -13,9 +13,9 @@ end syn;
 architecture rtl of syn is
     signal potential: unsigned(7 downto 0) := "00000000";
 begin
-    F <= '0';
     process(clk)
     begin
+        F<='0';
         if (rising_edge(clk)) then
             if ( s = '1') then
                 potential <= potential + 100;
